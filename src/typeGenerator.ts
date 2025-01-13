@@ -11,8 +11,7 @@ export async function makeTypeAndSchema(path: string, name: string){
         style: {
             tabWidth: 4
         },
-        bannerComment: '',
-        format: false
+        bannerComment: ''
     })
 
     return {
