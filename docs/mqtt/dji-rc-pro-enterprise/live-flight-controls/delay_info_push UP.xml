@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/drc.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>sdr_cmd_delay</td><td>Delay in the transmission protocol command link</td><td>int</td><td>{"unit_name":"Milliseconds / ms"}</td><td>Delay in the transmission protocol command link</td></tr><tr><td>liveview_delay_list</td><td>Video transmission video stream delay</td><td>array</td><td>{"size": -, "item_type": struct}</td><td>Video transmission video stream delay, multiple streams</td></tr><tr><td>»video_id</td><td>Stream number</td><td>text</td><td></td><td>Stream number</td></tr><tr><td>»liveview_delay_time</td><td>Stream delay</td><td>int</td><td>{"unit_name":"Milliseconds / ms"}</td><td>Stream delay</td></tr></tbody></table>

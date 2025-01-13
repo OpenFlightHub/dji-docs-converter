@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>stealth_state</td><td>Stealth mode state</td><td>bool</td><td>{"0":"Disable","1":"Enable"}</td><td></td></tr><tr><td>night_lights_state</td><td>Night flight lights state</td><td>bool</td><td>{"0":"Disable","1":"Enable"}</td><td></td></tr><tr><td>mode_code</td><td>Aircraft state</td><td>enum_int</td><td>{"0":"Standby","1":"Takeoff preparation","2":"Takeoff preparation completed","3":"Manual flight","4":"Automatic takeoff","5":"Wayline flight","6":"Panorama","7":"Intelligent tracking","8":"ADS-B avoidance","9":"Automatic returning to home","10":"Automatic landing","11":"Forced landing","12":"Three-blade landing","13":"Upgrading","14":"Not connected","15":"APAS","16":"Virtual stick state","17":"Live flight Controls"}</td><td></td></tr></tbody></table>

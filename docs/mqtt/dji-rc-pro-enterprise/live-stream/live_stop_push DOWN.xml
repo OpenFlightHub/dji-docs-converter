@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/live.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>video_id</td><td>ID of the live streaming video stream</td><td>text</td><td></td><td>Identifier for pushing video streams on a certain route, formatted as <em>{sn}/{camera_index}/{video_index}</em>. <em>{sn}</em> is the serial number of the video source device. <em>{camera_index}</em> is the camera index, using the format <em>{type-subtype-gimbalindex}</em>. <em>{video_index}</em> is the index of the video stream that can be selected at the camera level.</td></tr></tbody></table>

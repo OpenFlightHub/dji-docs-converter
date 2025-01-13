@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/drc.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>user_id</td><td>User ID</td><td>text</td><td>{ "length": "" }</td><td>The user ID of the cloud user requesting authorization.</td></tr><tr><td>user_callsign</td><td>User Callsign</td><td>text</td><td>{ "length": "" }</td><td>The nickname of the cloud user requesting authorization.</td></tr><tr><td>control_keys</td><td>Control Keys</td><td>array</td><td>{ "size": 1, "item_type": text }</td><td>To request flight control authorization, please fill in "flight".</td></tr></tbody></table>

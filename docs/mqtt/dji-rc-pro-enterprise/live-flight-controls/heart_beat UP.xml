@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/drc.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>seq</td><td>[Deprecated]Command sequence number</td><td>int</td><td></td><td>Incremental sequence number to ensure the sequential execution of commands</td></tr><tr><td>timestamp</td><td>Heartbeat transmission timestamp</td><td>int</td><td>{"unit_name":"Milliseconds / ms"}</td><td>The <code>heart_beat</code> protocol can determine whether the DRC link is active or not. If no heartbeat response is received within a certain period, the DRC link can be considered abnormal, and a retry can be initiated. If no heartbeat protocol is received for more than one minute, the device will consider the DRC link idle and exit the DRC link.</td></tr></tbody></table>

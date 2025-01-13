@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/remote-control.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>null</td><td>null</td><td>double</td><td></td><td></td></tr></tbody></table>

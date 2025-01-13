@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.1",
+    "json-schema-to-typescript": "^15.0.3"
+  }
+}

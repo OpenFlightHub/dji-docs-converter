@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/drc.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>result</td><td>Return code</td><td>int</td><td></td><td>Non-zero represents an error</td></tr><tr><td>status</td><td>Task state</td><td>enum_string</td><td>{"in_progress":"Executing"}</td><td>When capturing panoramas or other continuous photography actions, status information will be reported. Expect ongoing progress events to be reported. For detailed content, please refer to the <code>camera_photo_take_progress</code> event.</td></tr></tbody></table>

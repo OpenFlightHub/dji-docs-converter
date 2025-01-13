@@ -1,0 +1,7 @@
+<!--
+
+Copy pasted the <table> HTMLElement from https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/rc-pro/drc.html
+
+-->
+
+<table><thead><tr><th>Column</th><th>Name</th><th>Type</th><th>constraint</th><th>Description</th></tr></thead><tbody><tr><td>output</td><td>Output</td><td>struct</td><td></td><td></td></tr><tr><td>»status</td><td>Photo capturing status</td><td>enum_string</td><td>{"fail":"Failed","in_progress":"Executing","ok":"Finished"}</td><td></td></tr><tr><td>»progress</td><td>Progress</td><td>struct</td><td></td><td></td></tr><tr><td>»»current_step</td><td>Execution step</td><td>enum_int</td><td>{"3000":"Capturing panorama has not started or is finished","3002":"Panorama photo capturing in progress","3005":"Panorama photo stitching in progress"}</td><td></td></tr><tr><td>»»percent</td><td>Progress value</td><td>int</td><td>{"max":"100","min":"0","step":"1"}</td><td></td></tr><tr><td>»ext</td><td>Extended content</td><td>struct</td><td></td><td></td></tr><tr><td>»»camera_mode</td><td>Current camera mode</td><td>enum_int</td><td>{"3":"Panoramic photography"}</td><td></td></tr><tr><td>result</td><td>Return code</td><td>int</td><td></td><td>Non-zero represents an error</td></tr></tbody></table>
