@@ -1,4 +1,4 @@
-import { makeTypeAndSchema } from "./typeGenerator"
+import { makeTypeAndSchemaString } from "./typeGenerator"
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -28,8 +28,8 @@ async function run(){
 
         console.log('  processing', path.relative('docs', file.path))
 
-        const ret = await makeTypeAndSchema(file.path, file.name)
-        fs.appendFileSync(OUTPUT_FILE, ret.jsonSchema + '\n\n' + ret.typescriptType + '\n\n', 'utf-8')
+        const ret = await makeTypeAndSchemaString(file.path, file.name)
+        fs.appendFileSync(OUTPUT_FILE, ret, 'utf-8')
 
         entriesDone ++
         console.log('  progess', entriesDone, '/', entriesTotal)

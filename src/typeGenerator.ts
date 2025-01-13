@@ -3,27 +3,36 @@ import { readAndParseXmlFile } from "./xml";
 
 
 
-export async function makeTypeAndSchema(path: string, name: string){
+export async function makeTypeAndSchemaString(path: string, name: string){
 
     const jsonSchema = parseObjectDefintionTable(await readAndParseXmlFile(path))
 
-    const typescriptType = await compile(jsonSchema, name + '_TYPE', {
-        style: {
-            tabWidth: 4
-        },
-        bannerComment: ''
-    })
+    if(jsonSchema.push_mode_0){
+        return await process(jsonSchema.push_mode_0, name, '_STABLE_FREQUENCY') + '\n\n' + await process(jsonSchema.push_mode_1, name, '_STATE_CHANGE')
+    } else {
+        return await process(jsonSchema, name)
+    }
 
-    return {
-        jsonSchema: 'export const ' + name.toUpperCase().replace(/\-/g, '_') + '_SCHEMA = ' + JSON.stringify(jsonSchema, null, 4).replace(/(\s*)\"([^\"]+)\"(\s*\:.*)/g, (substring, ...args)=>{
+    async function process(schema: JSONSchema, name: string, suffix?: string){
+
+        const typescriptType = await compile(schema, name + (suffix || '') + '_TYPE', {
+            style: {
+                tabWidth: 4
+            },
+            bannerComment: ''
+        })
+
+        return 'export const ' + (name.toUpperCase().replace(/\-/g, '_').split('_').map(s => {
+            return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase()
+        }).join('')) + (suffix || '') + '_SCHEMA = ' + JSON.stringify(schema, null, 4).replace(/(\s*)\"([^\"]+)\"(\s*\:.*)/g, (substring, ...args)=>{
             if(!args[1].match(/^[a-zA-Z].*$/)){
                 return substring
             } else {
                 return args[0] + args[1] + args[2]
             }
 
-        }),
-        typescriptType
+        }) + '\n\n' +
+        typescriptType + '\n\n'
     }
 }
 
@@ -53,6 +62,9 @@ function parseXmlTable<C extends string>(xmlObject: any, columns: C[]){
 
 type PropertyType = 'struct' | 'array' | 'text' | 'int' | 'double' | 'enum_int' | 'bool' | 'float' //TODO support enum_string ? see https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/pilot-to-cloud/mqtt/m3-series/properties.html » photo_storage_settings
 
+
+type Properties = Record<"name" | "description" | "type" | "constraint" | "comments" | "accessMode" | "pushMode", string>[]
+
 /**
  * dji adds one "»" in front of the property for ever depth
  *
@@ -74,86 +86,123 @@ type PropertyType = 'struct' | 'array' | 'text' | 'int' | 'double' | 'enum_int' 
  *
  *
  */
-function parseObjectDefintionTable(xmlObject: any){
+function parseObjectDefintionTable(xmlObject: any): JSONSchema | {push_mode_0: JSONSchema, push_mode_1: JSONSchema} {
 
-    const parsed = parseXmlTable(xmlObject, ['name', 'description', 'type', 'constraint', 'comments', 'accessMode', 'pushMode'])
+    const parsed: Properties = parseXmlTable(xmlObject, ['name', 'description', 'type', 'constraint', 'comments', 'accessMode', 'pushMode'])
 
-    const schema: JSONSchema = {
-        type: 'object',
-        properties: {}
-    }
-
-    const scopeChain: JSONSchema[] = [schema]
-    let lastScope: JSONSchema = schema
+    const parsedPushMode_0: Properties = []
+    const parsedPushMode_1: Properties = []
 
     for(const property of parsed){
-
-        const depth = property.name.lastIndexOf('»') + 1
-
-        const propertyNameClean = property.name.replace(/»/g, '').trim()
-
-
-        if(depth !== (scopeChain.length - 1)){
-
-            let depthDiff = depth - (scopeChain.length - 1)
-
-            if (depthDiff === 1){
-
-                if(lastScope.type !== 'object' && lastScope.type !== 'array'){
-                    throw new Error('property has depth but scope is not an object or array! ' +  property.name)
-                }
-
-                scopeChain.push(lastScope)
-
-            } else if(depthDiff > 1){
-                throw new Error('depthDiff is > 1')
-            } else if(depthDiff < 0){
-                while(depthDiff < 0){
-                    scopeChain.pop()
-                    lastScope = scopeChain[scopeChain.length - 1] //TODO is this correct?
-                    depthDiff++
-                }
+        if(typeof property.accessMode === 'string'){
+            if(property.accessMode.trim() === 'r'){
+                property.comments += ' READONLY'
+            } else if(property.accessMode.trim() === 'rw'){
+                property.comments += ' READ AND WRITEABLE'
             }
         }
 
+        if(typeof property.pushMode === 'string'){
 
-        const currentScope = scopeChain[scopeChain.length - 1]
-
-        if(currentScope.type === 'object'){
-
-            if(!currentScope.properties){
-                currentScope.properties = {}
+            if(property.pushMode.trim() === '0'){
+                parsedPushMode_0.push(property)
+            } else if(property.pushMode.trim() === '1'){
+                parsedPushMode_1.push(property)
             }
-
-            const def = getPropertyDefinition(property as any)
-            currentScope.properties[propertyNameClean] = def
-            lastScope = def
-        } else if(currentScope.type === 'array'){
-
-            if(currentScope.items instanceof Array){
-                throw new Error('this should never happen: curenntScope.items is an array')
-            }
-
-            if(!currentScope.items){
-                currentScope.items = {
-                    type: 'object'
-                }
-            }
-
-            const def = getPropertyDefinition(property as any)
-
-            if(!currentScope.items.properties){
-                currentScope.items.properties = {}
-            }
-
-            currentScope.items.properties[propertyNameClean] = def
-            lastScope = def
-        } else {
-            throw new Error('this should never ever happen')
         }
     }
 
-    return schema
+    if(parsedPushMode_0.length > 0 || parsedPushMode_1.length > 0){
+        return {
+            push_mode_0: process(parsedPushMode_0),
+            push_mode_1: process(parsedPushMode_1)
+        }
+    } else {
+        return process(parsed)
+    }
+
+
+    function process(rows: Properties){
+
+
+        const schema: JSONSchema = {
+            type: 'object',
+            properties: {}
+        }
+
+        const scopeChain: JSONSchema[] = [schema]
+        let lastScope: JSONSchema = schema
+
+        for(const property of parsed){
+
+            const depth = property.name.lastIndexOf('»') + 1
+
+            const propertyNameClean = property.name.replace(/»/g, '').trim()
+
+
+            if(depth !== (scopeChain.length - 1)){
+
+                let depthDiff = depth - (scopeChain.length - 1)
+
+                if (depthDiff === 1){
+
+                    if(lastScope.type !== 'object' && lastScope.type !== 'array'){
+                        throw new Error('property has depth but scope is not an object or array! ' +  property.name)
+                    }
+
+                    scopeChain.push(lastScope)
+
+                } else if(depthDiff > 1){
+                    throw new Error('depthDiff is > 1')
+                } else if(depthDiff < 0){
+                    while(depthDiff < 0){
+                        scopeChain.pop()
+                        lastScope = scopeChain[scopeChain.length - 1] //TODO is this correct?
+                        depthDiff++
+                    }
+                }
+            }
+
+
+            const currentScope = scopeChain[scopeChain.length - 1]
+
+            if(currentScope.type === 'object'){
+
+                if(!currentScope.properties){
+                    currentScope.properties = {}
+                }
+
+                const def = getPropertyDefinition(property as any)
+                currentScope.properties[propertyNameClean] = def
+                lastScope = def
+            } else if(currentScope.type === 'array'){
+
+                if(currentScope.items instanceof Array){
+                    throw new Error('this should never happen: curenntScope.items is an array')
+                }
+
+                if(!currentScope.items){
+                    currentScope.items = {
+                        type: 'object'
+                    }
+                }
+
+                const def = getPropertyDefinition(property as any)
+
+                if(!currentScope.items.properties){
+                    currentScope.items.properties = {}
+                }
+
+                currentScope.items.properties[propertyNameClean] = def
+                lastScope = def
+            } else {
+                throw new Error('this should never ever happen')
+            }
+        }
+
+        return schema
+    }
+
 }
 
 
