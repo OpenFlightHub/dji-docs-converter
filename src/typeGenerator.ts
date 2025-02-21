@@ -8,12 +8,20 @@ export async function makeTypeAndSchemaString(path: string, name: string){
     const jsonSchema = parseObjectDefintionTable(await readAndParseXmlFile(path))
 
     if(jsonSchema.push_mode_0){
-        return await process(jsonSchema.push_mode_0, name, '_STABLE_FREQUENCY') + '\n\n' + await process(jsonSchema.push_mode_1, name, '_STATE_CHANGE')
+        return await process(jsonSchema.push_mode_0, name, '_STABLE_FREQUENCY') + '\n\n' + await process(jsonSchema.push_mode_1, name, '_STATE_CHANGE', true)
     } else {
         return await process(jsonSchema, name)
     }
 
-    async function process(schema: JSONSchema, name: string, suffix?: string){
+    async function process(schema: JSONSchema, name: string, suffix?: string, allTopLevelPropertiesOptional?: boolean){
+
+        if(allTopLevelPropertiesOptional){
+            if(schema.type === 'object' && schema.properties){
+                for(const propertyName of Object.keys(schema.properties)){
+                    schema.properties[propertyName].required = false
+                }
+            }
+        }
 
         const typescriptType = await compile(schema, name + (suffix || '') + '_TYPE', {
             style: {
